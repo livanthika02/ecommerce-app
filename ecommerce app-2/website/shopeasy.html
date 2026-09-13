@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ShopEasy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a231d;
+  --pine: #23412f;
+  --pine-light: #33553f;
+  --paper: #f6f5f0;
+  --paper-dim: #eceae2;
+  --amber: #d99b3f;
+  --rust: #b3432b;
+  --line: #d8d5c9;
+  --radius: 3px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+}
+h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 600; margin: 0 0 0.4em; color: var(--pine); }
+a { color: inherit; text-decoration: none; cursor: pointer; }
+button { font-family: inherit; cursor: pointer; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.navbar { border-bottom: 1px solid var(--line); background: var(--paper); position: sticky; top: 0; z-index: 10; }
+.navbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; max-width: 1120px; margin: 0 auto; flex-wrap: wrap; gap: 12px; }
+.brand { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; color: var(--pine); }
+.nav-links { display: flex; align-items: center; gap: 18px; font-size: 0.92rem; flex-wrap: wrap; }
+.nav-links a:hover { color: var(--pine); }
+.cart-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--pine); color: var(--paper); padding: 6px 12px; border-radius: 999px; font-size: 0.85rem; }
+.nav-btn { border: 1px solid var(--pine); background: transparent; color: var(--pine); padding: 7px 16px; border-radius: var(--radius); font-size: 0.9rem; }
+.nav-btn:hover { background: var(--pine); color: var(--paper); }
+.btn-primary { background: var(--pine); color: var(--paper); border: none; padding: 11px 22px; border-radius: var(--radius); font-size: 0.95rem; font-weight: 500; }
+.btn-primary:hover { background: var(--pine-light); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-outline { background: transparent; border: 1px solid var(--ink); color: var(--ink); padding: 9px 18px; border-radius: var(--radius); font-size: 0.9rem; }
+.btn-outline:hover { background: var(--ink); color: var(--paper); }
+.btn-danger { background: transparent; border: 1px solid var(--rust); color: var(--rust); padding: 6px 14px; border-radius: var(--radius); font-size: 0.85rem; }
+.btn-danger:hover { background: var(--rust); color: var(--paper); }
+.hero { padding: 56px 0 32px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-size: 2.4rem; max-width: 16ch; }
+.hero p { max-width: 46ch; color: #4b544d; font-size: 1.02rem; }
+.filters { display: flex; gap: 12px; margin: 24px 0 20px; flex-wrap: wrap; }
+.filters input, .filters select { padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: white; font-size: 0.9rem; font-family: inherit; }
+.filters input { flex: 1; min-width: 180px; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding-bottom: 60px; }
+.product-card { border: 1px solid var(--line); border-radius: var(--radius); background: white; display: flex; flex-direction: column; overflow: hidden; transition: border-color 0.15s ease; }
+.product-card:hover { border-color: var(--pine); }
+.product-thumb { aspect-ratio: 4/3; background: var(--paper-dim); display: flex; align-items: center; justify-content: center; overflow: hidden; color: #9a9689; font-size: 0.85rem; }
+.product-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.product-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.product-body h3 { font-size: 1.02rem; margin: 0; }
+.product-category { font-size: 0.76rem; color: #7a7566; }
+.product-price { font-family: 'Fraunces', serif; font-size: 1.15rem; color: var(--amber); margin-top: auto; }
+.product-stock { font-size: 0.76rem; color: #7a7566; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 32px 0 60px; }
+.detail-image { aspect-ratio: 1; background: var(--paper-dim); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.detail-image img { width: 100%; height: 100%; object-fit: cover; }
+.detail-price { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--amber); margin: 8px 0; }
+.qty-row { display: flex; align-items: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+.qty-row input { width: 60px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); text-align: center; }
+@media (max-width: 720px) { .detail-grid { grid-template-columns: 1fr; } }
+.cart-row { display: grid; grid-template-columns: 60px 1fr auto auto auto; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.cart-row img { width: 100%; border-radius: var(--radius); display: block; }
+.cart-thumb { width: 60px; height: 60px; background: var(--paper-dim); border-radius: var(--radius); }
+.cart-summary { border-top: 2px solid var(--ink); margin-top: 16px; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.form-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: #4b544d; }
+.form-grid input { padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 0.95rem; }
+.form-grid .full { grid-column: 1 / -1; }
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+.auth-card { max-width: 400px; margin: 50px auto; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius); background: white; }
+.auth-card label { display: block; margin-bottom: 14px; font-size: 0.85rem; color: #4b544d; }
+.auth-card input { width: 100%; margin-top: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 0.95rem; }
+.error-text { color: var(--rust); font-size: 0.85rem; margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+th, td { text-align: left; padding: 10px 10px; border-bottom: 1px solid var(--line); }
+th { color: #7a7566; font-weight: 500; font-size: 0.78rem; }
+.status-badge { padding: 3px 10px; border-radius: 999px; font-size: 0.76rem; background: var(--paper-dim); color: var(--ink); }
+.admin-tabs { display: flex; gap: 4px; margin: 24px 0; border-bottom: 1px solid var(--line); }
+.admin-tabs button { background: none; border: none; padding: 10px 4px; margin-right: 20px; font-size: 0.95rem; color: #7a7566; border-bottom: 2px solid transparent; }
+.admin-tabs button.active { color: var(--pine); border-color: var(--pine); }
+.empty-state { text-align: center; padding: 50px 0; color: #7a7566; }
+.order-card { border: 1px solid var(--line); border-radius: 3px; padding: 18px; margin-bottom: 14px; }
+.table-wrap { overflow-x: auto; }
+.notice { background: var(--paper-dim); border: 1px solid var(--line); border-radius: 3px; padding: 12px 16px; font-size: 0.85rem; color: #4b544d; margin: 16px 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+/* ---------- tiny state store (in-memory, seeded on load) ---------- */
+const DB_KEY = "shopeasy_data_v1";
+
+function loadDB() {
+  const raw = localStorage.getItem(DB_KEY);
+  if (raw) {
+    try { return JSON.parse(raw); } catch (e) {}
+  }
+  return null;
+}
+
+function seedDB() {
+  return {
+    products: [
+      { id: "p1", name: "Ceramic Pour-Over Set", description: "A hand-glazed ceramic dripper and matching mug, made for slow mornings.", price: 1499, category: "Kitchen", imageUrl: "", stock: 14 },
+      { id: "p2", name: "Canvas Weekender Bag", description: "Waxed canvas duffel with leather straps, built to age well.", price: 3999, category: "Bags", imageUrl: "", stock: 7 },
+      { id: "p3", name: "Wool Throw Blanket", description: "Heavyweight wool throw woven in a soft herringbone pattern.", price: 2799, category: "Home", imageUrl: "", stock: 20 },
+      { id: "p4", name: "Brass Desk Lamp", description: "Adjustable brass lamp with a warm, dimmable bulb.", price: 3299, category: "Home", imageUrl: "", stock: 5 },
+      { id: "p5", name: "Leather Notebook Cover", description: "Full-grain leather cover sized for a standard A5 notebook.", price: 1899, category: "Stationery", imageUrl: "", stock: 18 },
+      { id: "p6", name: "Enamel Camp Mug", description: "Classic speckled enamel mug for coffee, tea, or camp cocoa.", price: 599, category: "Kitchen", imageUrl: "", stock: 30 },
+    ],
+    users: [
+      { id: "u-admin", name: "Admin", email: "admin@shopeasy.com", password: "admin123", role: "admin" },
+      { id: "u-demo", name: "Demo User", email: "user@shopeasy.com", password: "user123", role: "user" },
+    ],
+    orders: [],
+  };
+}
+
+let db = loadDB() || seedDB();
+function persist() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+if (!loadDB()) persist();
+
+function loadSession() {
+  const raw = sessionStorage.getItem("shopeasy_session");
+  return raw ? JSON.parse(raw) : { userId: null, cart: [] };
+}
+let session = loadSession();
+function persistSession() { sessionStorage.setItem("shopeasy_session", JSON.stringify(session)); }
+
+function currentUser() {
+  return db.users.find((u) => u.id === session.userId) || null;
+}
+
+function uid(prefix) {
+  return prefix + Math.random().toString(36).slice(2, 9);
+}
+
+/* ---------- router ---------- */
+let route = { name: "home" };
+
+function navigate(name, params = {}) {
+  route = { name, ...params };
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- helpers ---------- */
+function money(n) { return "\u20b9" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 }); }
+
+function esc(str) {
+  const div = document.createElement("div");
+  div.textContent = str == null ? "" : String(str);
+  return div.innerHTML;
+}
+
+function requireLogin(next) {
+  if (!currentUser()) { navigate("login", { next }); return false; }
+  return true;
+}
+
+/* ---------- render ---------- */
+const root = document.getElementById("root");
+
+function render() {
+  const user = currentUser();
+  const cartCount = session.cart.reduce((s, i) => s + i.quantity, 0);
+
+  let body = "";
+  if (route.name === "home") body = renderHome();
+  else if (route.name === "product") body = renderProduct(route.id);
+  else if (route.name === "cart") body = renderCart();
+  else if (route.name === "checkout") body = renderCheckout();
+  else if (route.name === "login") body = renderLogin();
+  else if (route.name === "register") body = renderRegister();
+  else if (route.name === "orders") body = renderOrders();
+  else if (route.name === "admin") body = renderAdmin();
+  else body = renderHome();
+
+  root.innerHTML = `
+    <header class="navbar">
+      <div class="navbar-inner">
+        <a class="brand" onclick="navigate('home')">ShopEasy</a>
+        <nav class="nav-links">
+          <a onclick="navigate('home')">Shop</a>
+          ${user && user.role === "admin" ? `<a onclick="navigate('admin')">Admin</a>` : ""}
+          ${user ? `<a onclick="navigate('orders')">My orders</a>` : ""}
+          <a class="cart-pill" id="cart-pill" onclick="navigate('cart')">Cart${cartCount > 0 ? " · " + cartCount : ""}</a>
+          ${user
+            ? `<button class="nav-btn" onclick="handleLogout()">Log out</button>`
+            : `<a class="nav-btn" onclick="navigate('login')">Log in</a>`}
+        </nav>
+      </div>
+    </header>
+    ${body}
+  `;
+}
+
+/* ---------- Home ---------- */
+let homeState = { search: "", category: "" };
+
+function renderHome() {
+  const q = homeState.search.toLowerCase();
+  const filtered = db.products.filter((p) => {
+    const matchesSearch = !q || p.name.toLowerCase().includes(q);
+    const matchesCat = !homeState.category || p.category === homeState.category;
+    return matchesSearch && matchesCat;
+  });
+  const categories = [...new Set(db.products.map((p) => p.category))];
+
+  return `
+    <div class="container">
+      <section class="hero">
+        <h1>Good products, delivered to your door.</h1>
+        <p>Browse the catalog, add what you like to your cart, and check out in a couple of clicks.</p>
+      </section>
+      <div class="filters">
+        <input placeholder="Search products…" value="${esc(homeState.search)}" oninput="homeState.search=this.value; renderProductGrid();" />
+        <select onchange="homeState.category=this.value; renderProductGrid();">
+          <option value="">All categories</option>
+          ${categories.map((c) => `<option value="${esc(c)}" ${homeState.category === c ? "selected" : ""}>${esc(c)}</option>`).join("")}
+        </select>
+      </div>
+      <div id="product-grid">${gridHTML(filtered)}</div>
+    </div>
+  `;
+}
+
+function gridHTML(products) {
+  if (products.length === 0) return `<div class="empty-state">No products match your search yet.</div>`;
+  return `<div class="product-grid">${products.map(productCardHTML).join("")}</div>`;
+}
+
+function productCardHTML(p) {
+  return `
+    <a class="product-card" onclick="navigate('product', {id:'${p.id}'})">
+      <div class="product-thumb">${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}">` : "No image"}</div>
+      <div class="product-body">
+        <span class="product-category">${esc(p.category)}</span>
+        <h3>${esc(p.name)}</h3>
+        <span class="product-stock">${p.stock > 0 ? p.stock + " in stock" : "Out of stock"}</span>
+        <span class="product-price">${money(p.price)}</span>
+        <button class="btn-primary" style="margin-top:8px" id="quick-add-${p.id}" ${p.stock === 0 ? "disabled" : ""} onclick="handleQuickAdd(event, '${p.id}')">${p.stock === 0 ? "Out of stock" : "Add to cart"}</button>
+      </div>
+    </a>
+  `;
+}
+
+function handleQuickAdd(event, productId) {
+  event.preventDefault();
+  event.stopPropagation();
+  const p = db.products.find((x) => x.id === productId);
+  if (!p || p.stock === 0) return;
+  const existing = session.cart.find((i) => i.productId === productId);
+  if (existing) existing.quantity = Math.min(p.stock, existing.quantity + 1);
+  else session.cart.push({ productId, quantity: 1 });
+  persistSession();
+  const btn = document.getElementById("quick-add-" + productId);
+  if (btn) {
+    const original = btn.textContent;
+    btn.textContent = "Added ✓";
+    setTimeout(() => { if (btn) btn.textContent = original; }, 1000);
+  }
+  updateCartPill();
+}
+
+function updateCartPill() {
+  const pill = document.getElementById("cart-pill");
+  if (!pill) return;
+  const cartCount = session.cart.reduce((s, i) => s + i.quantity, 0);
+  pill.textContent = "Cart" + (cartCount > 0 ? " · " + cartCount : "");
+}
+
+function renderProductGrid() {
+  const q = homeState.search.toLowerCase();
+  const filtered = db.products.filter((p) => {
+    const matchesSearch = !q || p.name.toLowerCase().includes(q);
+    const matchesCat = !homeState.category || p.category === homeState.category;
+    return matchesSearch && matchesCat;
+  });
+  document.getElementById("product-grid").innerHTML = gridHTML(filtered);
+}
+
+/* ---------- Product detail ---------- */
+function renderProduct(id) {
+  const p = db.products.find((x) => x.id === id);
+  if (!p) return `<div class="container"><div class="empty-state">Product not found.</div></div>`;
+  return `
+    <div class="container">
+      <div class="detail-grid">
+        <div class="detail-image">${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}">` : "No image"}</div>
+        <div>
+          <span class="product-category">${esc(p.category)}</span>
+          <h1>${esc(p.name)}</h1>
+          <div class="detail-price">${money(p.price)}</div>
+          <p>${esc(p.description)}</p>
+          <p class="product-stock">${p.stock > 0 ? p.stock + " in stock" : "Out of stock"}</p>
+          <div class="qty-row">
+            <input type="number" id="qty-input" min="1" max="${p.stock}" value="1" />
+            <button class="btn-primary" id="add-btn" ${p.stock === 0 ? "disabled" : ""} onclick="handleAddToCart('${p.id}')">Add to cart</button>
+            <button class="btn-outline" onclick="navigate('home')">Back to shop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function handleAddToCart(productId) {
+  const p = db.products.find((x) => x.id === productId);
+  const qtyInput = document.getElementById("qty-input");
+  const qty = Math.max(1, Math.min(p.stock, Number(qtyInput.value) || 1));
+  const existing = session.cart.find((i) => i.productId === productId);
+  if (existing) existing.quantity = Math.min(p.stock, existing.quantity + qty);
+  else session.cart.push({ productId, quantity: qty });
+  persistSession();
+  const btn = document.getElementById("add-btn");
+  btn.textContent = "Added ✓";
+  setTimeout(() => { btn.textContent = "Add to cart"; }, 1200);
+  render();
+  navigate("product", { id: productId });
+}
+
+/* ---------- Cart ---------- */
+function renderCart() {
+  const rows = session.cart.map((i) => {
+    const p = db.products.find((x) => x.id === i.productId);
+    if (!p) return "";
+    return `
+      <div class="cart-row">
+        <div class="cart-thumb">${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}">` : ""}</div>
+        <div>
+          <strong>${esc(p.name)}</strong>
+          <div class="product-stock">${money(p.price)} each</div>
+        </div>
+        <input type="number" min="1" max="${p.stock}" value="${i.quantity}"
+          style="width:60px;padding:8px;border:1px solid var(--line);border-radius:3px;text-align:center"
+          onchange="handleUpdateQty('${i.productId}', this.value)" />
+        <strong>${money(p.price * i.quantity)}</strong>
+        <button class="btn-danger" onclick="handleRemoveFromCart('${i.productId}')">Remove</button>
+      </div>
+    `;
+  }).join("");
+
+  if (session.cart.length === 0) {
+    return `<div class="container"><div class="empty-state"><p>Your cart is empty.</p>
+      <a class="btn-primary" style="display:inline-block;margin-top:12px" onclick="navigate('home')">Browse products</a>
+    </div></div>`;
+  }
+
+  const total = session.cart.reduce((s, i) => {
+    const p = db.products.find((x) => x.id === i.productId);
+    return s + (p ? p.price * i.quantity : 0);
+  }, 0);
+
+  return `
+    <div class="container">
+      <h1 style="margin-top:36px">Your cart</h1>
+      ${rows}
+      <div class="cart-summary"><span>Total</span><strong>${money(total)}</strong></div>
+      <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
+        <button class="btn-outline" onclick="navigate('home')">Keep shopping</button>
+        <button class="btn-primary" onclick="handleGoToCheckout()">Checkout</button>
+      </div>
+    </div>
+  `;
+}
+
+function handleUpdateQty(productId, value) {
+  const item = session.cart.find((i) => i.productId === productId);
+  const qty = Number(value);
+  if (qty <= 0) session.cart = session.cart.filter((i) => i.productId !== productId);
+  else item.quantity = qty;
+  persistSession();
+  render();
+}
+
+function handleRemoveFromCart(productId) {
+  session.cart = session.cart.filter((i) => i.productId !== productId);
+  persistSession();
+  render();
+}
+
+function handleGoToCheckout() {
+  if (!requireLogin("checkout")) return;
+  navigate("checkout");
+}
+
+/* ---------- Checkout ---------- */
+function renderCheckout() {
+  if (!currentUser()) { navigate("login", { next: "checkout" }); return ""; }
+  const total = session.cart.reduce((s, i) => {
+    const p = db.products.find((x) => x.id === i.productId);
+    return s + (p ? p.price * i.quantity : 0);
+  }, 0);
+  return `
+    <div class="container">
+      <h1 style="margin-top:36px">Checkout</h1>
+      <form id="checkout-form" onsubmit="handlePlaceOrder(event)">
+        <div class="form-grid">
+          <label class="full">Full name<input required id="co-name" /></label>
+          <label class="full">Address<input required id="co-address" /></label>
+          <label>City<input required id="co-city" /></label>
+          <label>Postal code<input required id="co-postal" /></label>
+          <label class="full">Country<input required id="co-country" /></label>
+        </div>
+        <div id="checkout-error"></div>
+        <div class="cart-summary"><span>Order total</span><strong>${money(total)}</strong></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:20px">
+          <button class="btn-primary" type="submit">Place order</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+function handlePlaceOrder(e) {
+  e.preventDefault();
+  const errorEl = document.getElementById("checkout-error");
+  errorEl.innerHTML = "";
+
+  for (const item of session.cart) {
+    const p = db.products.find((x) => x.id === item.productId);
+    if (!p || p.stock < item.quantity) {
+      errorEl.innerHTML = `<p class="error-text">Not enough stock for ${esc(p ? p.name : "an item")}.</p>`;
+      return;
+    }
+  }
+
+  const items = session.cart.map((i) => {
+    const p = db.products.find((x) => x.id === i.productId);
+    p.stock -= i.quantity;
+    return { productId: p.id, name: p.name, price: p.price, quantity: i.quantity };
+  });
+  const totalAmount = items.reduce((s, i) => s + i.price * i.quantity, 0);
+
+  const order = {
+    id: uid("o"),
+    userId: currentUser().id,
+    items,
+    shippingAddress: {
+      fullName: document.getElementById("co-name").value,
+      addressLine: document.getElementById("co-address").value,
+      city: document.getElementById("co-city").value,
+      postalCode: document.getElementById("co-postal").value,
+      country: document.getElementById("co-country").value,
+    },
+    totalAmount,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
+  db.orders.push(order);
+  persist();
+  session.cart = [];
+  persistSession();
+  navigate("orders");
+}
+
+/* ---------- Auth ---------- */
+function renderLogin() {
+  return `
+    <div class="auth-card">
+      <h2>Log in</h2>
+      <div class="notice">Try it now — admin@shopeasy.com / admin123 (admin) or user@shopeasy.com / user123 (customer).</div>
+      <form onsubmit="handleLogin(event)">
+        <label>Email<input type="email" required id="login-email" /></label>
+        <label>Password<input type="password" required id="login-password" /></label>
+        <div id="login-error"></div>
+        <button class="btn-primary" type="submit" style="width:100%">Log in</button>
+      </form>
+      <p style="margin-top:16px;font-size:0.9rem">New here? <a style="color:var(--pine);text-decoration:underline" onclick="navigate('register')">Create an account</a></p>
+    </div>
+  `;
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById("login-email").value.toLowerCase().trim();
+  const password = document.getElementById("login-password").value;
+  const user = db.users.find((u) => u.email === email && u.password === password);
+  const errorEl = document.getElementById("login-error");
+  if (!user) { errorEl.innerHTML = `<p class="error-text">Invalid email or password.</p>`; return; }
+  session.userId = user.id;
+  persistSession();
+  navigate(route.next || "home");
+}
+
+function renderRegister() {
+  return `
+    <div class="auth-card">
+      <h2>Create an account</h2>
+      <form onsubmit="handleRegister(event)">
+        <label>Name<input required id="reg-name" /></label>
+        <label>Email<input type="email" required id="reg-email" /></label>
+        <label>Password<input type="password" required minlength="6" id="reg-password" /></label>
+        <div id="register-error"></div>
+        <button class="btn-primary" type="submit" style="width:100%">Create account</button>
+      </form>
+      <p style="margin-top:16px;font-size:0.9rem">Already have an account? <a style="color:var(--pine);text-decoration:underline" onclick="navigate('login')">Log in</a></p>
+    </div>
+  `;
+}
+
+function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById("reg-name").value.trim();
+  const email = document.getElementById("reg-email").value.toLowerCase().trim();
+  const password = document.getElementById("reg-password").value;
+  const errorEl = document.getElementById("register-error");
+
+  if (db.users.some((u) => u.email === email)) {
+    errorEl.innerHTML = `<p class="error-text">That email is already registered.</p>`;
+    return;
+  }
+  const role = db.users.length === 0 ? "admin" : "user";
+  const user = { id: uid("u"), name, email, password, role };
+  db.users.push(user);
+  persist();
+  session.userId = user.id;
+  persistSession();
+  navigate("home");
+}
+
+function handleLogout() {
+  session.userId = null;
+  persistSession();
+  navigate("home");
+}
+
+/* ---------- Orders (customer) ---------- */
+function renderOrders() {
+  if (!currentUser()) { navigate("login", { next: "orders" }); return ""; }
+  const myOrders = db.orders.filter((o) => o.userId === currentUser().id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (myOrders.length === 0) {
+    return `<div class="container"><div class="empty-state">You haven't placed any orders yet.</div></div>`;
+  }
+  return `
+    <div class="container">
+      <h1 style="margin-top:36px">Your orders</h1>
+      ${myOrders.map((o) => `
+        <div class="order-card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <span>Order #${o.id.slice(-6)}</span>
+            <span class="status-badge">${esc(o.status)}</span>
+          </div>
+          <ul style="margin:0 0 10px;padding-left:18px">
+            ${o.items.map((i) => `<li>${esc(i.name)} × ${i.quantity} — ${money(i.price * i.quantity)}</li>`).join("")}
+          </ul>
+          <strong>Total: ${money(o.totalAmount)}</strong>
+          <p class="product-stock" style="margin-top:6px">Placed on ${new Date(o.createdAt).toLocaleDateString()}</p>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+/* ---------- Admin ---------- */
+let adminState = { tab: "products", editingId: null };
+
+function renderAdmin() {
+  const user = currentUser();
+  if (!user) { navigate("login", { next: "admin" }); return ""; }
+  if (user.role !== "admin") { navigate("home"); return ""; }
+
+  return `
+    <div class="container">
+      <h1 style="margin-top:36px">Admin dashboard</h1>
+      <div class="admin-tabs">
+        <button class="${adminState.tab === "products" ? "active" : ""}" onclick="adminState.tab='products'; render();">Products</button>
+        <button class="${adminState.tab === "orders" ? "active" : ""}" onclick="adminState.tab='orders'; render();">Orders</button>
+      </div>
+      ${adminState.tab === "products" ? renderAdminProducts() : renderAdminOrders()}
+    </div>
+  `;
+}
+
+function renderAdminProducts() {
+  const editing = adminState.editingId ? db.products.find((p) => p.id === adminState.editingId) : null;
+  return `
+    <h2 style="font-size:1.15rem">${editing ? "Edit product" : "Add a product"}</h2>
+    <form onsubmit="handleProductSubmit(event)">
+      <div class="form-grid">
+        <label>Name<input required id="pf-name" value="${editing ? esc(editing.name) : ""}" /></label>
+        <label>Category<input required id="pf-category" value="${editing ? esc(editing.category) : ""}" /></label>
+        <label>Price (USD)<input required type="number" min="0" step="0.01" id="pf-price" value="${editing ? editing.price : ""}" /></label>
+        <label>Stock<input required type="number" min="0" id="pf-stock" value="${editing ? editing.stock : ""}" /></label>
+        <label class="full">Image URL<input id="pf-image" placeholder="https://…" value="${editing ? esc(editing.imageUrl) : ""}" /></label>
+        <label class="full">Description<input required id="pf-description" value="${editing ? esc(editing.description) : ""}" /></label>
+      </div>
+      <div id="product-form-error"></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn-primary" type="submit">${editing ? "Save changes" : "Add product"}</button>
+        ${editing ? `<button type="button" class="btn-outline" onclick="adminState.editingId=null; render();">Cancel</button>` : ""}
+      </div>
+    </form>
+
+    <h2 style="font-size:1.15rem;margin-top:36px">Catalog (${db.products.length})</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+        <tbody>
+          ${db.products.map((p) => `
+            <tr>
+              <td>${esc(p.name)}</td>
+              <td>${esc(p.category)}</td>
+              <td>${money(p.price)}</td>
+              <td>${p.stock}</td>
+              <td style="display:flex;gap:8px">
+                <button class="btn-outline" onclick="adminState.editingId='${p.id}'; render();">Edit</button>
+                <button class="btn-danger" onclick="handleDeleteProduct('${p.id}')">Delete</button>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function handleProductSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById("pf-name").value.trim();
+  const category = document.getElementById("pf-category").value.trim();
+  const price = Number(document.getElementById("pf-price").value);
+  const stock = Number(document.getElementById("pf-stock").value);
+  const imageUrl = document.getElementById("pf-image").value.trim();
+  const description = document.getElementById("pf-description").value.trim();
+
+  if (adminState.editingId) {
+    const p = db.products.find((x) => x.id === adminState.editingId);
+    Object.assign(p, { name, category, price, stock, imageUrl, description });
+  } else {
+    db.products.push({ id: uid("p"), name, category, price, stock, imageUrl, description });
+  }
+  persist();
+  adminState.editingId = null;
+  render();
+}
+
+function handleDeleteProduct(id) {
+  if (!confirm("Delete this product?")) return;
+  db.products = db.products.filter((p) => p.id !== id);
+  persist();
+  render();
+}
+
+const STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
+
+function renderAdminOrders() {
+  const orders = [...db.orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (orders.length === 0) return `<div class="empty-state">No orders placed yet.</div>`;
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th>Placed</th></tr></thead>
+        <tbody>
+          ${orders.map((o) => {
+            const buyer = db.users.find((u) => u.id === o.userId);
+            return `
+              <tr>
+                <td>#${o.id.slice(-6)}</td>
+                <td>${buyer ? esc(buyer.name) : "—"}</td>
+                <td>${money(o.totalAmount)}</td>
+                <td>
+                  <select onchange="handleOrderStatusChange('${o.id}', this.value)">
+                    ${STATUSES.map((s) => `<option value="${s}" ${o.status === s ? "selected" : ""}>${s}</option>`).join("")}
+                  </select>
+                </td>
+                <td>${new Date(o.createdAt).toLocaleDateString()}</td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function handleOrderStatusChange(id, status) {
+  const order = db.orders.find((o) => o.id === id);
+  order.status = status;
+  persist();
+  render();
+}
+
+/* ---------- init ---------- */
+render();
+</script>
+</body>
+</html>
