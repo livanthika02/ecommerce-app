@@ -25,21 +25,31 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(load, 300);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, category]);
+
+  // Seed Button Handler
+  const handleSeed = async () => {
+    try {
+      setLoading(true);
+      await fetch("https://ecommerce-backend-2-kf4m.onrender.com/api/products/seed", {
+        method: "POST"
+      });
+      await load();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [...new Set(products.map((p) => p.category))];
 
   return (
-    <div className="container">
-      <section className="hero">
-        <h1>Good products, delivered to your door.</h1>
-        <p>Browse the catalog, add what you like to your cart, and check out in a couple of clicks.</p>
-      </section>
-
-      <div className="filters">
+    <div style={{ padding: "20px" }}>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
         <input
-          placeholder="Search products…"
+          type="text"
+          placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -49,16 +59,19 @@ export default function Home() {
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
+        <button onClick={handleSeed} style={{ background: "#4CAF50", color: "#fff", padding: "8px 16px", border: "none", cursor: "pointer", borderRadius: "4px" }}>
+          Seed Database Now
+        </button>
       </div>
 
       {loading ? (
-        <p>Loading products…</p>
+        <p>Loading products...</p>
       ) : products.length === 0 ? (
-        <div className="empty-state">No products match your search yet.</div>
+        <p>No products match your search yet.</p>
       ) : (
-        <div className="product-grid">
-          {products.map((p) => (
-            <ProductCard key={p._id} product={p} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "20px" }}>
+          {products.map((product) => (
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       )}
