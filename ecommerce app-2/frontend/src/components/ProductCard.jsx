@@ -9,7 +9,12 @@ export default function ProductCard({ product }) {
     e.preventDefault();
     e.stopPropagation();
     if (product.stock === 0) return;
-    addToCart(product, 1);
+    {product.imageUrl ? (
+  <img 
+    src={product.imageUrl.startsWith('http') ? product.imageUrl : `https://ecommerce-backend-2-kf4m.onrender.com${product.imageUrl}`} 
+    alt={product.name} 
+  />
+) : "No image"}
   };
 
   return (

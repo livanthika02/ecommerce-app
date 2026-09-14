@@ -1,4 +1,4 @@
-const BASE_URL = "/api";
+const BASE_URL = "https://ecommerce-backend-2-kf4m.onrender.com/api";
 
 const request = async (path, options = {}) => {
   const token = localStorage.getItem("token");
