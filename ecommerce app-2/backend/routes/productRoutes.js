@@ -1,3 +1,8 @@
+import express from "express";
+import Product from "../models/Product.js";
+
+const router = express.Router();
+
 // Seed route
 router.post("/seed", async (req, res) => {
   try {
@@ -35,3 +40,15 @@ router.post("/seed", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Get all products
+router.get("/", async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+export default router;
